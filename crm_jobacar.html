@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Jobacar — Panel de Leads</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --bg2: #13151c;
+  --bg3: #1a1d27;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text2: rgba(232,234,240,0.55);
+  --text3: rgba(232,234,240,0.3);
+  --accent: #4f7cff;
+  --accent2: #7c5cfc;
+  --green: #22d3a5;
+  --yellow: #f5c842;
+  --red: #ff5f57;
+  --orange: #ff9640;
+
+  --maxus-color: #1281A6;
+  --kgm-color: #e8c84a;
+  --subaru-color: #004A99;
+  --mitsubishi-color: #E60012;
+
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── LOGIN ───────────────────────────────────────── */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+#login-screen::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(79,124,255,0.12) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  pointer-events: none;
+}
+
+#login-screen::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(124,92,252,0.1) 0%, transparent 70%);
+  bottom: -50px; right: -50px;
+  pointer-events: none;
+}
+
+.login-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  padding: 48px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-logo {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-logo span {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.login-card h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.login-card p {
+  font-size: 14px;
+  color: var(--text2);
+  margin-bottom: 36px;
+}
+
+.login-field {
+  margin-bottom: 16px;
+}
+
+.login-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.login-field input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 13px 16px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.login-field input:focus { border-color: var(--accent); }
+.login-field input::placeholder { color: var(--text3); }
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 8px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.login-btn:hover { background: #3d6aee; transform: translateY(-1px); }
+
+.login-error {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: rgba(255,95,87,0.1);
+  border: 1px solid rgba(255,95,87,0.3);
+  color: #ff5f57;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ── APP ─────────────────────────────────────────── */
+#app { display: none; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo-text {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.sidebar-logo-sub {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+.nav-section-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 12px 20px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-left: 2px solid transparent;
+  user-select: none;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(79,124,255,0.07); }
+
+.nav-item-icon { font-size: 15px; width: 18px; text-align: center; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 99px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.nav-badge.green { background: var(--green); color: #000; }
+
+.sidebar-brand-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.user-name { font-size: 13px; font-weight: 600; }
+.user-role { font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+
+.logout-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 12px;
+  transition: 0.2s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* MAIN */
+.main {
+  margin-left: 220px;
+  padding: 32px;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.topbar-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+/* STATS CARDS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+.stat-card.green::before { background: var(--green); }
+.stat-card.yellow::before { background: var(--yellow); }
+.stat-card.orange::before { background: var(--orange); }
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.stat-change {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+
+/* FILTERS */
+.filters-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-select, .filter-input {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 8px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  min-width: 140px;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.filter-select:focus, .filter-input:focus { border-color: var(--accent); }
+
+.filter-input { min-width: 220px; }
+
+.filter-input::placeholder { color: var(--text3); }
+
+.filter-btn {
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.filter-btn:hover { background: #3d6aee; }
+
+.filter-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+
+.filter-btn.secondary:hover { border-color: var(--text2); color: var(--text); background: transparent; }
+
+/* LEADS TABLE */
+.table-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.table-count {
+  font-size: 12px;
+  color: var(--text3);
+  font-family: var(--font-mono);
+}
+
+.leads-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.leads-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  white-space: nowrap;
+}
+
+.leads-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.leads-table tr:last-child td { border-bottom: none; }
+
+.leads-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.lead-name { font-weight: 600; font-size: 13px; }
+.lead-phone { font-family: var(--font-mono); font-size: 12px; color: var(--text2); }
+.lead-email { font-size: 12px; color: var(--text2); }
+.lead-date { font-family: var(--font-mono); font-size: 11px; color: var(--text3); white-space: nowrap; }
+.lead-modelo { font-size: 12px; font-weight: 500; }
+
+/* ESTADO BADGE */
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-body);
+  transition: opacity 0.2s;
+}
+
+.estado-badge:hover { opacity: 0.85; }
+
+.estado-Nuevo { background: rgba(79,124,255,0.15); color: #4f7cff; }
+.estado-WhatsApp { background: rgba(34,211,165,0.15); color: #22d3a5; }
+.estado-Sin { background: rgba(245,200,66,0.15); color: #f5c842; }
+.estado-Contactado { background: rgba(34,211,165,0.2); color: #22d3a5; }
+.estado-Venta { background: rgba(34,211,165,0.25); color: #1aaf87; }
+.estado-Motivo { background: rgba(255,95,87,0.15); color: #ff5f57; }
+.estado-Esta { background: rgba(255,150,64,0.15); color: #ff9640; }
+
+/* MARCA BADGE */
+.marca-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+.marca-MAXUS { background: rgba(18,129,166,0.2); color: #1281A6; }
+.marca-KGM { background: rgba(232,200,74,0.2); color: #c9a800; }
+.marca-SUBARU { background: rgba(0,74,153,0.2); color: #4f7cff; }
+.marca-MITSUBISHI { background: rgba(230,0,18,0.2); color: #E60012; }
+.marca-MAXUS-ASTARA { background: rgba(18,129,166,0.15); color: #1281A6; border: 1px dashed #1281A6; }
+.marca-MITSUBISHI-ASTARA { background: rgba(230,0,18,0.15); color: #E60012; border: 1px dashed #E60012; }
+
+/* ASESOR SELECT */
+.asesor-select {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 4px 8px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  max-width: 140px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.asesor-select:focus { border-color: var(--accent); color: var(--text); }
+
+/* NOTAS */
+.nota-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.nota-btn:hover { border-color: var(--accent); color: var(--accent); }
+.nota-btn.has-nota { border-color: var(--yellow); color: var(--yellow); }
+
+/* ACTIONS */
+.action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.action-btn:hover { color: var(--text); }
+.action-btn.delete:hover { color: var(--red); }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 64px 20px;
+  color: var(--text3);
+}
+
+.empty-state-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
+.empty-state p { font-size: 14px; }
+
+/* LOADING */
+.loading {
+  text-align: center;
+  padding: 48px;
+  color: var(--text3);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-left: 8px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close:hover { color: var(--text); }
+
+.modal-body { padding: 24px; }
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+
+.modal-field input,
+.modal-field textarea,
+.modal-field select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.modal-field textarea { resize: vertical; min-height: 100px; }
+.modal-field input:focus,
+.modal-field textarea:focus,
+.modal-field select:focus { border-color: var(--accent); }
+
+.modal-detail-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.modal-detail-label {
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  min-width: 90px;
+  padding-top: 1px;
+}
+
+.modal-detail-value { color: var(--text); flex: 1; }
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  padding: 10px 24px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.modal-btn.primary { background: var(--accent); color: #fff; }
+.modal-btn.primary:hover { background: #3d6aee; }
+.modal-btn.secondary { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+.modal-btn.secondary:hover { color: var(--text); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--green);
+  padding: 14px 20px;
+  font-size: 13px;
+  z-index: 9999;
+  display: none;
+  animation: toastIn 0.25s ease;
+  max-width: 300px;
+}
+
+.toast.error { border-left-color: var(--red); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* HAMBURGER */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  padding: 8px 10px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hamburger span {
+  display: block;
+  width: 20px; height: 2px;
+  background: var(--text);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 20px; padding-top: 64px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .filters-bar { gap: 8px; }
+  .filter-select, .filter-input { min-width: 120px; }
+  .leads-table th:nth-child(n+5),
+  .leads-table td:nth-child(n+5) { display: none; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .login-card { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><span></span> Automoció Jobacar</div>
+    <h1>CRM Leads</h1>
+    <p>Accede con tus credenciales de asesor</p>
+    <div class="login-field">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="usuario" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Contraseña</label>
+      <div style="position:relative;">
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px;width:100%;">
+        <button type="button" onclick="togglePass()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(232,234,240,0.4);padding:0;display:flex;align-items:center;" title="Ver contraseña">
+          <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar →</button>
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">Jobacar CRM</div>
+      <div class="sidebar-logo-sub">Panel de leads</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Marcas</div>
+      <div class="nav-item active" onclick="setMarca('TODAS')" data-marca="TODAS">
+        <span class="nav-item-icon">◈</span> Todos los leads
+        <span class="nav-badge" id="badge-todas">0</span>
+      </div>
+      <div class="nav-item" onclick="setMarca('MAXUS')" data-marca="MAXUS">
+        <span class="sidebar-brand-dot" style="background:#1281A6"></span> MAXUS
+        <span class="nav-badge" id="badge-maxus">0</span>
+      </div>
+      <div class="nav-item" onclick="setMarca('KGM')" data-marca="KGM">
+        <span class="sidebar-brand-dot" style="background:#e8c84a"></span> KGM
+        <span class="nav-badge" id="badge-kgm">0</span>
+      </div>
+      <div class="nav-item" onclick="setMarca('SUBARU')" data-marca="SUBARU">
+        <span class="sidebar-brand-dot" style="background:#004A99"></span> Subaru
+        <span class="nav-badge" id="badge-subaru">0</span>
+      </div>
+      <div class="nav-item" onclick="setMarca('MITSUBISHI')" data-marca="MITSUBISHI">
+        <span class="sidebar-brand-dot" style="background:#E60012"></span> Mitsubishi
+        <span class="nav-badge" id="badge-mitsubishi">0</span>
+      </div>
+      <div class="nav-item" onclick="setMarca('MAXUS-ASTARA')" data-marca="MAXUS-ASTARA">
+        <span class="sidebar-brand-dot" style="background:#1281A6;border:2px dashed #1281A6;background:transparent"></span> MAXUS Astara
+        <span class="nav-badge" id="badge-maxus-astara">0</span>
+      </div>
+      <div class="nav-item" onclick="setMarca('MITSUBISHI-ASTARA')" data-marca="MITSUBISHI-ASTARA">
+        <span class="sidebar-brand-dot" style="background:transparent;border:2px dashed #E60012"></span> Mitsubishi Astara
+        <span class="nav-badge" id="badge-mitsubishi-astara">0</span>
+      </div>
+
+      <div class="nav-section-label" style="margin-top:8px">Filtros rápidos</div>
+      <div class="nav-item" onclick="setEstadoFiltro('Nuevo')">
+        <span class="nav-item-icon">🔵</span> Nuevos
+        <span class="nav-badge green" id="badge-nuevos">0</span>
+      </div>
+      <div class="nav-item" onclick="setEstadoFiltro('Sin Respuesta')">
+        <span class="nav-item-icon">🟡</span> Sin respuesta
+      </div>
+      <div class="nav-item" onclick="setEstadoFiltro('Venta')">
+        <span class="nav-item-icon">🟢</span> Ventas
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="user-name-display">Admin</div>
+          <div class="user-role" id="user-role-display">Administrador</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Todos los Leads</div>
+        <div class="topbar-sub" id="topbar-sub">Cargando datos...</div>
+      </div>
+      <button class="filter-btn" onclick="loadLeads()" style="display:flex;align-items:center;gap:6px;">
+        ↻ Actualizar
+      </button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Leads</div>
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-change">Acumulado</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Nuevos</div>
+        <div class="stat-value" id="stat-nuevos">—</div>
+        <div class="stat-change">Sin gestionar</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">En proceso</div>
+        <div class="stat-value" id="stat-proceso">—</div>
+        <div class="stat-change">Contactados / Mirando</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">Ventas</div>
+        <div class="stat-value" id="stat-ventas">—</div>
+        <div class="stat-change">Cerradas</div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-bar">
+      <input type="text" class="filter-input" id="search-input" placeholder="🔍 Buscar nombre, teléfono, email..." oninput="applyFilters()">
+      <select class="filter-select" id="filter-estado" onchange="applyFilters()">
+        <option value="">Todos los estados</option>
+        <option>Nuevo</option>
+        <option>WhatsApp Enviado</option>
+        <option>Sin Respuesta</option>
+        <option>Contactado</option>
+        <option>Venta</option>
+        <option>Motivo No Compra</option>
+        <option>Esta mirando opciones</option>
+      </select>
+      <select class="filter-select" id="filter-asesor" onchange="applyFilters()">
+        <option value="">Todos los asesores</option>
+        <option>Mateu Morales</option>
+        <option>Joaquim Fernández</option>
+        <option>David Alexandre</option>
+        <option>Sin asignar</option>
+      </select>
+      <button class="filter-btn secondary" onclick="resetFilters()">✕ Limpiar</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <span class="table-title">Leads</span>
+        <span class="table-count" id="table-count">0 resultados</span>
+      </div>
+      <div id="table-content">
+        <div class="loading">Cargando leads</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══ MODAL DETALLE ══ -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Detalle del Lead</span>
+      <button class="modal-close" onclick="closeModal('modal-detalle')">×</button>
+    </div>
+    <div class="modal-body" id="modal-detalle-body"></div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="closeModal('modal-detalle')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL NOTA ══ -->
+<div class="modal-overlay" id="modal-nota">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Añadir / Editar Nota</span>
+      <button class="modal-close" onclick="closeModal('modal-nota')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label>Nota interna</label>
+        <textarea id="nota-text" placeholder="Escribe aquí tu nota sobre este lead..."></textarea>
+      </div>
+      <input type="hidden" id="nota-row-index">
+      <input type="hidden" id="nota-marca">
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="closeModal('modal-nota')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveNota()">Guardar nota</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIGURACIÓN
+// ══════════════════════════════════════════════
+
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9-V5I-gjZ016T88OJI6wXeAo4JwbEapgw_bP2vRedWRy-yO4Z3XSe_ksb-1JnTI21/exec';
+
+const MARCAS = ['MAXUS', 'KGM', 'SUBARU', 'MITSUBISHI', 'MAXUS-ASTARA', 'MITSUBISHI-ASTARA'];
+
+const ESTADOS = [
+  'Nuevo', 'WhatsApp Enviado', 'Sin Respuesta',
+  'Contactado', 'Venta', 'Motivo No Compra', 'Esta mirando opciones'
+];
+
+const ASESORES = ['Mateu Morales', 'Joaquim Fernández', 'David Alexandre', 'Sin asignar'];
+
+// ── Usuarios del sistema ──
+const USERS = {
+  'admin':      { pass: 'Jobacar2026!', nombre: 'Administrador', rol: 'admin',    marcas: ['TODAS'] },
+  'mateu':      { pass: 'Mateu2026',    nombre: 'Mateu Morales',  rol: 'asesor',   marcas: ['TODAS'], asesor: 'Mateu Morales' },
+  'joaquim':    { pass: 'Joaquim2026',  nombre: 'Joaquim Fernández', rol: 'asesor', marcas: ['TODAS'], asesor: 'Joaquim Fernández' },
+  'david':      { pass: 'David2026',    nombre: 'David Alexandre', rol: 'asesor',  marcas: ['TODAS'], asesor: 'David Alexandre' },
+  'jefeventas': { pass: 'Jefe2026',     nombre: 'Jefe de Ventas',  rol: 'jefe',    marcas: ['TODAS'] },
+  'gerencia':   { pass: 'Gerencia2026', nombre: 'Gerencia',        rol: 'gerencia', marcas: ['TODAS'] },
+};
+
+// ── Estado de la app ──
+let currentUser = null;
+let allLeads = [];
+let filteredLeads = [];
+let currentMarca = 'TODAS';
+let currentEstadoFiltro = '';
+
+// ══════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('app').style.display.includes('block')) {
+    doLogin();
+  }
+});
+
+function togglePass() {
+  const input = document.getElementById('login-pass');
+  const icon = document.getElementById('eye-icon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    input.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+function doLogin() {
+  const user = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const err  = document.getElementById('login-error');
+
+  if (USERS[user] && USERS[user].pass === pass) {
+    currentUser = { ...USERS[user], username: user };
+    err.style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  allLeads = [];
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// ══════════════════════════════════════════════
+// INIT APP
+// ══════════════════════════════════════════════
+
+function initApp() {
+  // Mostrar info usuario
+  document.getElementById('user-name-display').textContent = currentUser.nombre;
+  document.getElementById('user-role-display').textContent = currentUser.rol.charAt(0).toUpperCase() + currentUser.rol.slice(1);
+  document.getElementById('user-avatar').textContent = currentUser.nombre.charAt(0).toUpperCase();
+
+  // Si es asesor, prefiltrar su filtro de asesor
+  if (currentUser.rol === 'asesor') {
+    document.getElementById('filter-asesor').value = currentUser.asesor;
+  }
+
+  // Ocultar algunas funciones para gerencia (solo lectura)
+  if (currentUser.rol === 'gerencia') {
+    document.querySelectorAll('.asesor-select, .estado-badge, .nota-btn, .action-btn.delete').forEach(el => {
+      el.style.pointerEvents = 'none';
+      el.style.opacity = '0.5';
+    });
+  }
+
+  loadLeads();
+}
+
+// ══════════════════════════════════════════════
+// CARGAR LEADS DESDE GOOGLE SHEETS
+// ══════════════════════════════════════════════
+
+async function loadLeads() {
+  document.getElementById('table-content').innerHTML = '<div class="loading">Cargando leads</div>';
+
+  try {
+    // Cargar todas las marcas en paralelo
+    const results = await Promise.all(
+      MARCAS.map(marca =>
+        fetch(`${WEBHOOK_URL}?action=getLeads&marca=${marca}`)
+          .then(r => r.json())
+          .then(data => data.leads || [])
+          .catch(() => [])
+      )
+    );
+
+    allLeads = [];
+    MARCAS.forEach((marca, i) => {
+      results[i].forEach(lead => {
+        allLeads.push({ ...lead, marca });
+      });
+    });
+
+    // Ordenar por fecha descendente
+    allLeads.sort((a, b) => {
+      const da = parseDate(a.fecha);
+      const db = parseDate(b.fecha);
+      return db - da;
+    });
+
+    updateBadges();
+    updateStats();
+    applyFilters();
+
+    const now = new Date();
+    document.getElementById('topbar-sub').textContent =
+      `Última actualización: ${now.toLocaleTimeString('es-ES')} · ${allLeads.length} leads totales`;
+
+  } catch (err) {
+    document.getElementById('table-content').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">⚠</div>
+        <p>Error al cargar los leads. Comprueba la conexión con Google Sheets.</p>
+        <p style="margin-top:8px;font-size:11px;color:var(--text3)">${err.message}</p>
+      </div>`;
+  }
+}
+
+function parseDate(str) {
+  if (!str) return new Date(0);
+  const [d, m, y] = str.split(' ')[0].split('/');
+  return new Date(`${y}-${m}-${d}`);
+}
+
+// ══════════════════════════════════════════════
+// NAVEGACIÓN Y FILTROS
+// ══════════════════════════════════════════════
+
+function setMarca(marca) {
+  currentMarca = marca;
+  currentEstadoFiltro = '';
+  document.getElementById('filter-estado').value = '';
+
+  document.querySelectorAll('.nav-item[data-marca]').forEach(el => {
+    el.classList.toggle('active', el.dataset.marca === marca);
+  });
+
+  const titles = {
+    'TODAS': 'Todos los Leads',
+    'MAXUS': 'Leads MAXUS',
+    'KGM': 'Leads KGM',
+    'SUBARU': 'Leads Subaru',
+    'MITSUBISHI': 'Leads Mitsubishi',
+    'MAXUS-ASTARA': 'Leads MAXUS Astara',
+    'MITSUBISHI-ASTARA': 'Leads Mitsubishi Astara'
+  };
+  document.getElementById('topbar-title').textContent = titles[marca] || marca;
+
+  if (window.innerWidth < 768) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+
+  applyFilters();
+}
+
+function setEstadoFiltro(estado) {
+  currentEstadoFiltro = estado;
+  document.getElementById('filter-estado').value = estado;
+  applyFilters();
+  if (window.innerWidth < 768) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+
+function applyFilters() {
+  const search  = document.getElementById('search-input').value.toLowerCase();
+  const estado  = document.getElementById('filter-estado').value;
+  const asesor  = document.getElementById('filter-asesor').value;
+
+  filteredLeads = allLeads.filter(lead => {
+    if (currentMarca !== 'TODAS' && lead.marca !== currentMarca) return false;
+    if (estado && lead.estado !== estado) return false;
+    if (asesor && lead.asesor !== asesor) return false;
+    if (currentUser.rol === 'asesor') {
+      // Los asesores solo ven sus propios leads o sin asignar
+    }
+    if (search) {
+      const haystack = `${lead.nombre} ${lead.apellidos} ${lead.telefono} ${lead.email} ${lead.modelo}`.toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-estado').value = '';
+  if (currentUser.rol !== 'asesor') {
+    document.getElementById('filter-asesor').value = '';
+  }
+  currentEstadoFiltro = '';
+  applyFilters();
+}
+
+// ══════════════════════════════════════════════
+// RENDER TABLE
+// ══════════════════════════════════════════════
+
+function renderTable() {
+  document.getElementById('table-count').textContent = `${filteredLeads.length} resultado${filteredLeads.length !== 1 ? 's' : ''}`;
+
+  if (filteredLeads.length === 0) {
+    document.getElementById('table-content').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <p>No hay leads que coincidan con los filtros aplicados</p>
+      </div>`;
+    return;
+  }
+
+  const canEdit = currentUser.rol !== 'gerencia';
+
+  const rows = filteredLeads.map((lead, i) => {
+    const estadoClass = 'estado-' + (lead.estado || 'Nuevo').split(' ')[0];
+    const marcaClass  = 'marca-' + (lead.marca || 'MAXUS');
+    const tieneNota   = lead.notas && lead.notas.trim().length > 0;
+
+    const estadoOptions = ESTADOS.map(e =>
+      `<option${lead.estado === e ? ' selected' : ''}>${e}</option>`
+    ).join('');
+
+    const asesorOptions = ASESORES.map(a =>
+      `<option${lead.asesor === a ? ' selected' : ''}>${a}</option>`
+    ).join('');
+
+    return `<tr>
+      <td>
+        <div class="lead-name">${lead.nombre || ''} ${lead.apellidos || ''}</div>
+        <div class="lead-phone">${lead.telefono || '—'}</div>
+      </td>
+      <td><div class="lead-email">${lead.email || '—'}</div></td>
+      <td><div class="lead-modelo">${lead.modelo || '—'}</div></td>
+      <td>
+        ${canEdit
+          ? `<select class="asesor-select" onchange="updateField(${i},'asesor',this.value)">${asesorOptions}</select>`
+          : `<span style="font-size:12px;color:var(--text2)">${lead.asesor || '—'}</span>`
+        }
+      </td>
+      <td>
+        ${canEdit
+          ? `<select class="estado-badge ${estadoClass}" onchange="updateField(${i},'estado',this.value)">${estadoOptions}</select>`
+          : `<span class="estado-badge ${estadoClass}">${lead.estado || 'Nuevo'}</span>`
+        }
+      </td>
+      <td><span class="marca-badge ${marcaClass}">${lead.marca || ''}</span></td>
+      <td class="lead-date">${lead.fecha ? lead.fecha.split(' ')[0] : '—'}</td>
+      <td>
+        <button class="nota-btn ${tieneNota ? 'has-nota' : ''}" onclick="openNota(${i})" title="${tieneNota ? lead.notas : 'Añadir nota'}">
+          ${tieneNota ? '📝' : '+ Nota'}
+        </button>
+      </td>
+      <td>
+        <button class="action-btn" onclick="openDetalle(${i})" title="Ver detalle">👁</button>
+        ${canEdit ? `<button class="action-btn delete" onclick="deleteLead(${i})" title="Eliminar">🗑</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-content').innerHTML = `
+    <div style="overflow-x:auto">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Contacto</th>
+            <th>Email</th>
+            <th>Modelo</th>
+            <th>Asesor</th>
+            <th>Estado</th>
+            <th>Marca</th>
+            <th>Fecha</th>
+            <th>Notas</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+// ACTUALIZAR CAMPO (ESTADO / ASESOR)
+// ══════════════════════════════════════════════
+
+async function updateField(index, field, value) {
+  const lead = filteredLeads[index];
+  lead[field] = value;
+
+  // Actualizar también en allLeads
+  const allIndex = allLeads.findIndex(l =>
+    l.telefono === lead.telefono && l.fecha === lead.fecha && l.marca === lead.marca
+  );
+  if (allIndex !== -1) allLeads[allIndex][field] = value;
+
+  // Enviar actualización al Apps Script
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'updateLead',
+        marca: lead.marca,
+        rowIndex: lead.rowIndex,
+        field,
+        value
+      })
+    });
+    showToast(`${field === 'estado' ? 'Estado' : 'Asesor'} actualizado ✓`);
+  } catch (err) {
+    showToast('Error al guardar cambio', true);
+  }
+
+  updateStats();
+  updateBadges();
+}
+
+// ══════════════════════════════════════════════
+// NOTAS
+// ══════════════════════════════════════════════
+
+function openNota(index) {
+  const lead = filteredLeads[index];
+  document.getElementById('nota-text').value = lead.notas || '';
+  document.getElementById('nota-row-index').value = index;
+  document.getElementById('nota-marca').value = lead.marca;
+  openModal('modal-nota');
+}
+
+async function saveNota() {
+  const index = parseInt(document.getElementById('nota-row-index').value);
+  const nota  = document.getElementById('nota-text').value.trim();
+  const lead  = filteredLeads[index];
+
+  lead.notas = nota;
+
+  const allIndex = allLeads.findIndex(l =>
+    l.telefono === lead.telefono && l.fecha === lead.fecha && l.marca === lead.marca
+  );
+  if (allIndex !== -1) allLeads[allIndex].notas = nota;
+
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'updateLead',
+        marca: lead.marca,
+        rowIndex: lead.rowIndex,
+        field: 'notas',
+        value: nota
+      })
+    });
+    showToast('Nota guardada ✓');
+    closeModal('modal-nota');
+    renderTable();
+  } catch (err) {
+    showToast('Error al guardar nota', true);
+  }
+}
+
+// ══════════════════════════════════════════════
+// DETALLE LEAD
+// ══════════════════════════════════════════════
+
+function openDetalle(index) {
+  const lead = filteredLeads[index];
+  const fields = [
+    ['Nombre',    `${lead.nombre || ''} ${lead.apellidos || ''}`],
+    ['Teléfono',  lead.telefono || '—'],
+    ['Email',     lead.email || '—'],
+    ['Empresa',   lead.empresa || '—'],
+    ['Modelo',    lead.modelo || '—'],
+    ['Consulta',  lead.interes || '—'],
+    ['Mensaje',   lead.mensaje || '—'],
+    ['Estado',    lead.estado || 'Nuevo'],
+    ['Asesor',    lead.asesor || 'Sin asignar'],
+    ['Marca',     lead.marca || '—'],
+    ['Fecha',     lead.fecha || '—'],
+    ['Notas',     lead.notas || 'Sin notas'],
+  ];
+
+  document.getElementById('modal-detalle-body').innerHTML = fields.map(([label, value]) => `
+    <div class="modal-detail-row">
+      <span class="modal-detail-label">${label}</span>
+      <span class="modal-detail-value">${value}</span>
+    </div>
+  `).join('');
+
+  openModal('modal-detalle');
+}
+
+// ══════════════════════════════════════════════
+// ELIMINAR LEAD
+// ══════════════════════════════════════════════
+
+async function deleteLead(index) {
+  if (!confirm('¿Eliminar este lead? Esta acción no se puede deshacer.')) return;
+
+  const lead = filteredLeads[index];
+
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'deleteLead',
+        marca: lead.marca,
+        rowIndex: lead.rowIndex
+      })
+    });
+
+    allLeads = allLeads.filter(l =>
+      !(l.telefono === lead.telefono && l.fecha === lead.fecha && l.marca === lead.marca)
+    );
+    showToast('Lead eliminado');
+    applyFilters();
+    updateStats();
+    updateBadges();
+  } catch (err) {
+    showToast('Error al eliminar', true);
+  }
+}
+
+// ══════════════════════════════════════════════
+// STATS Y BADGES
+// ══════════════════════════════════════════════
+
+function updateStats() {
+  const leads = currentMarca === 'TODAS' ? allLeads : allLeads.filter(l => l.marca === currentMarca);
+  document.getElementById('stat-total').textContent  = leads.length;
+  document.getElementById('stat-nuevos').textContent = leads.filter(l => l.estado === 'Nuevo').length;
+  document.getElementById('stat-proceso').textContent = leads.filter(l =>
+    ['Contactado','Esta mirando opciones','WhatsApp Enviado'].includes(l.estado)
+  ).length;
+  document.getElementById('stat-ventas').textContent = leads.filter(l => l.estado === 'Venta').length;
+}
+
+function updateBadges() {
+  document.getElementById('badge-todas').textContent     = allLeads.length;
+  document.getElementById('badge-maxus').textContent     = allLeads.filter(l => l.marca === 'MAXUS').length;
+  document.getElementById('badge-kgm').textContent       = allLeads.filter(l => l.marca === 'KGM').length;
+  document.getElementById('badge-subaru').textContent    = allLeads.filter(l => l.marca === 'SUBARU').length;
+  document.getElementById('badge-mitsubishi').textContent= allLeads.filter(l => l.marca === 'MITSUBISHI').length;
+  document.getElementById('badge-maxus-astara').textContent     = allLeads.filter(l => l.marca === 'MAXUS-ASTARA').length;
+  document.getElementById('badge-mitsubishi-astara').textContent= allLeads.filter(l => l.marca === 'MITSUBISHI-ASTARA').length;
+  document.getElementById('badge-nuevos').textContent    = allLeads.filter(l => l.estado === 'Nuevo').length;
+}
+
+// ══════════════════════════════════════════════
+// MODAL / TOAST / SIDEBAR
+// ══════════════════════════════════════════════
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+let toastTimer;
+function showToast(msg, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = `toast${isError ? ' error' : ''}`;
+  toast.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+</script>
+</body>
+</html>
