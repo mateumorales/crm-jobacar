@@ -1371,8 +1371,7 @@ async function updateField(index, field, value) {
   // Enviar actualización al Apps Script
   try {
     await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
+      method: 'POST'
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'updateLead',
@@ -1419,7 +1418,6 @@ async function saveNota() {
     await fetch(WEBHOOK_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'updateLead',
         marca: lead.marca,
