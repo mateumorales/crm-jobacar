@@ -1193,8 +1193,19 @@ async function loadLeads() {
 
 function parseDate(str) {
   if (!str) return new Date(0);
-  const [d, m, y] = str.split(' ')[0].split('/');
-  return new Date(`${y}-${m}-${d}`);
+  // Si ya es un objeto Date (viene así desde Sheets a veces)
+  if (str instanceof Date) return str;
+  // Si es un string ISO (formato Date.toString() de JS)
+  if (typeof str === 'string' && str.includes('T')) return new Date(str);
+  // Formato esperado: "dd/MM/yyyy HH:mm"
+  try {
+    const parts = String(str).split(' ')[0].split('/');
+    if (parts.length !== 3) return new Date(0);
+    const [d, m, y] = parts;
+    return new Date(`${y}-${m}-${d}`);
+  } catch (err) {
+    return new Date(0);
+  }
 }
 
 // ══════════════════════════════════════════════
