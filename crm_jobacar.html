@@ -1190,7 +1190,20 @@ async function loadLeads() {
       </div>`;
   }
 }
-
+function formatFecha(fecha) {
+  if (!fecha) return '—';
+  // Si es string formato "dd/MM/yyyy HH:mm" → coger solo la fecha
+  if (typeof fecha === 'string' && fecha.includes('/')) {
+    return fecha.split(' ')[0];
+  }
+  // Si es Date o string ISO → formatear a dd/MM/yyyy
+  const d = fecha instanceof Date ? fecha : new Date(fecha);
+  if (isNaN(d.getTime())) return '—';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yy = d.getFullYear();
+  return `${dd}/${mm}/${yy}`;
+}
 function parseDate(str) {
   if (!str) return new Date(0);
   if (str instanceof Date) return str;
