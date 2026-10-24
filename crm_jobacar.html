@@ -1265,7 +1265,7 @@ function applyFilters() {
   const search  = document.getElementById('search-input').value.toLowerCase();
   const estado  = document.getElementById('filter-estado').value;
   const asesor  = document.getElementById('filter-asesor').value;
-
+  const origen  = document.getElementById('filter-origen').value;
   filteredLeads = allLeads.filter(lead => {
     if (currentMarca !== 'TODAS' && lead.marca !== currentMarca) return false;
     if (estado && lead.estado !== estado) return false;
