@@ -1230,6 +1230,7 @@ function setMarca(marca) {
   currentMarca = marca;
   currentEstadoFiltro = '';
   document.getElementById('filter-estado').value = '';
+  document.getElementById('filter-origen').value = '';
 
   document.querySelectorAll('.nav-item[data-marca]').forEach(el => {
     el.classList.toggle('active', el.dataset.marca === marca);
