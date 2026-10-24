@@ -1289,6 +1289,7 @@ function applyFilters() {
 function resetFilters() {
   document.getElementById('search-input').value = '';
   document.getElementById('filter-estado').value = '';
+  document.getElementById('filter-origen').value = '';
   if (currentUser.rol !== 'asesor') {
     document.getElementById('filter-asesor').value = '';
   }
