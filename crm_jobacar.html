@@ -1270,6 +1270,7 @@ function applyFilters() {
     if (currentMarca !== 'TODAS' && lead.marca !== currentMarca) return false;
     if (estado && lead.estado !== estado) return false;
     if (asesor && lead.asesor !== asesor) return false;
+    if (origen && lead.fuente !== origen) return false;
     if (currentUser.rol === 'asesor') {
       // Los asesores solo ven sus propios leads o sin asignar
     }
