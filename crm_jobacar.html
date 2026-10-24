@@ -1344,6 +1344,7 @@ function renderTable() {
         }
       </td>
       <td><span class="marca-badge ${marcaClass}">${lead.marca || ''}</span></td>
+      <td><span style="font-size:11px;color:var(--text2)">${lead.fuente || '—'}</span></td>
       <td class="lead-date">${formatFecha(lead.fecha)}</td>
       <td>
         <button class="nota-btn ${tieneNota ? 'has-nota' : ''}" onclick="openNota(${i})" title="${tieneNota ? lead.notas : 'Añadir nota'}">
